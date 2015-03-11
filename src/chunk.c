@@ -68,6 +68,7 @@ static int mRise=0;
 static int mSet=0;
 static int mNextPrayer=0;
 static char mCity[50];
+static int batteryPercent;
 
 static int fc1h=0;
 static int fc1l=0;
@@ -84,11 +85,11 @@ static char fc3d[4];
 
 static bool popup;
 
-static int mPedometer=1;
-static int mLastPedo=0;
-static int mSleep=0;
-static int mIdle=0;
-static int mActivity=0;
+//static int mPedometer=1;
+//static int mLastPedo=0;
+//static int mSleep=0;
+//static int mIdle=0;
+//static int mActivity=0;
 
 static int mFajr=0;
 static int mDhuhur=0;
@@ -253,14 +254,14 @@ const int STEP_INCREMENT = 50;
 const int MAX_CALIBRATION_SETTINGS = 3;
 const int MIN_CALIBRATION_SETTINGS = 1;
 
-int X_DELTA = 40;//35;
-int Y_DELTA, Z_DELTA = 195;//185;
-int YZ_DELTA_MIN = 185;//175;
-int YZ_DELTA_MAX = 205;//195; 
+int X_DELTA = 43;//35;
+int Y_DELTA, Z_DELTA = 200;//185;
+int YZ_DELTA_MIN = 190;//175;
+int YZ_DELTA_MAX = 210;//195; 
 int X_DELTA_TEMP, Y_DELTA_TEMP, Z_DELTA_TEMP = 0;
 int lastX, lastY, lastZ, currX, currY, currZ = 0;
 
-long stepGoal = 3000;
+long stepGoal = 5000;
 //long pedometerCount = 0;
 //long caloriesBurned = 0;
 //long tempTotal = 0;
@@ -368,6 +369,7 @@ void resetUpdate() {
 }
 
 void update_ui_callback() {
+  /*
 	if ((validX && validY && !did_pebble_vibrate) || (validX && validZ && !did_pebble_vibrate)) {
 		mPedometer++;
     //APP_LOG(APP_LOG_LEVEL_DEBUG, "PEDO3 update ui: %d", mPedometer);
@@ -382,10 +384,10 @@ void update_ui_callback() {
 			//window_stack_push(window, true);
 		}
 	}
-
+  */
 	resetUpdate();
 }
-
+/*
 void autoCorrectZ(){
 	if (Z_DELTA > YZ_DELTA_MAX){
 		Z_DELTA = YZ_DELTA_MAX; 
@@ -435,10 +437,10 @@ void pedometer_update() {
 		startedSession = true;
 	}
 }
-
+*/
 static void timer_callback(void *data) {
   //APP_LOG(APP_LOG_LEVEL_DEBUG, "PEDO1 timer_callback()");
-  
+  /*
 	AccelData accel = (AccelData ) { .x = 0, .y = 0, .z = 0 };
 	accel_service_peek(&accel);
 
@@ -453,8 +455,8 @@ static void timer_callback(void *data) {
 	}
 	
 	did_pebble_vibrate = accel.did_vibrate;
-
-	pedometer_update();
+  */
+	//pedometer_update();
 	update_ui_callback();
 
 	//layer_mark_dirty(window_get_root_layer(pedometer));
@@ -471,7 +473,7 @@ static void updateNextPrayer(void) {
   else if(currTime < mIsha)   mNextPrayer = mIsha;
   else mNextPrayer = mFajr;
   
-  snprintf(mPedometerText, sizeof(mPedometerText), "%05d  %02d:%02d  %02d:%02d", mPedometer, (int)(mSleep/60), mSleep%60, (int)(mNextPrayer/100), mNextPrayer%100);
+  snprintf(mPedometerText, sizeof(mPedometerText), "%02d:%02d %s", (int)(mNextPrayer/100), mNextPrayer%100, mCity);
   text_layer_set_text(mPedometerLayer, mPedometerText);  
 }
 
@@ -496,13 +498,15 @@ void weather_set_temperature(int16_t t) {
 }
 
 void weather_set_highlow(int16_t high, int16_t low, int16_t humidity, int16_t rise, int16_t set) {
-	if(high==99 && low==0) {
-		snprintf(mHighLowText, sizeof(mHighLowText), "S'Rise/S'Set  P: %s%%", "?");
+	
+  snprintf(mHighLowText, sizeof(mHighLowText), "%02d:%02d/%02d:%02d   P:%d%%", (int)(rise/100), rise-(((int)(rise/100))*100), (int)(set/100), set-(((int)(set/100))*100), humidity);
+	text_layer_set_text(mHighLowLayer, mHighLowText);
+
+  if(high==99 && low==0) {
     snprintf(mHiText, sizeof(mHiText), "%s\u00B0", "?");
     snprintf(mLoText, sizeof(mLoText), "%s\u00B0", "?");
 	}
 	else {
-		snprintf(mHighLowText, sizeof(mHighLowText), "%02d:%02d/%02d:%02d   P:%d%%", (int)(rise/100), rise-(((int)(rise/100))*100), (int)(set/100), set-(((int)(set/100))*100), humidity);
     snprintf(mHiText, sizeof(mHiText), "%d\u00B0", high);
     snprintf(mLoText, sizeof(mLoText), "%d\u00B0", low);
 	}
@@ -515,26 +519,26 @@ void weather_set_highlow(int16_t high, int16_t low, int16_t humidity, int16_t ri
 }
 
 void weather_set_loading() {
-  if(mTemperatureHigh!=99 && mTemperatureLow!=0) {
+  //if(mTemperatureHigh!=99 && mTemperatureLow!=0) {
     weather_set_highlow(mTemperatureHigh,mTemperatureLow,mHumidity,mRise,mSet);
     weather_set_temperature(mTemperatureDegrees);
     weather_set_icon(mTemperatureIcon);
-    text_layer_set_text(mLocationLayer, mCity);
+    //text_layer_set_text(mLocationLayer, mCity);
     return;
-  }
-  snprintf(mCity, sizeof(mCity), "%s", "Location");
+  /*}
+  //snprintf(mCity, sizeof(mCity), "%s", "Location");
 	snprintf(mHighLowText, sizeof(mHighLowText), "%s", "CHUNK v2.1"); //"LOW 999\u00B0 HIGH 999\u00B0"); //
-  snprintf(mPedometerText, sizeof(mPedometerText), "%s", "16540   07:32   22:45");
+  snprintf(mPedometerText, sizeof(mPedometerText), "%s", "22:45 50% Location");
   snprintf(mHiText, sizeof(mHiText), "%s", "Hi");
   snprintf(mLoText, sizeof(mLoText), "%s", "Lo");
-  
-  text_layer_set_text(mLocationLayer, mCity);
-	text_layer_set_text(mHighLowLayer, mHighLowText);
-  text_layer_set_text(mPedometerLayer, mPedometerText);
-	text_layer_set_text(mHiLayer, mHiText);
-	text_layer_set_text(mLoLayer, mLoText);
-	weather_set_icon(48);  
-	weather_set_temperature(999);
+  */
+  //text_layer_set_text(mLocationLayer, mCity);
+	//text_layer_set_text(mHighLowLayer, mHighLowText);
+  //text_layer_set_text(mPedometerLayer, mPedometerText);
+	//text_layer_set_text(mHiLayer, mHiText);
+	//text_layer_set_text(mLoLayer, mLoText);
+	//weather_set_icon(48);  
+	//weather_set_temperature(999);
 }
 
 // HORIZONTAL LINE //
@@ -558,7 +562,7 @@ static char pFajr[8];
 static char pRise[8];
 static char pDhuhur[8];
 static char pAsr[8];
-static char pSet[8];
+static char pSet[12];
 static char pIsha[8];
 static TextLayer *pTimeLayer;
 static char pTime[8];
@@ -600,7 +604,7 @@ static void popup_init(void) {
   text_layer_set_text(pFajrLayer, pFajr);
 	layer_add_child(popupLayer, text_layer_get_layer(pFajrLayer));
 
-  pRiseLayer = text_layer_create(  GRect(70,  84, 60, 20));
+  pRiseLayer = text_layer_create(  GRect(60,  84, 60, 20));
 	text_layer_set_font(pRiseLayer, mHighLowFont);
 	text_layer_set_text_alignment(pRiseLayer, GTextAlignmentLeft);
   snprintf(pRise, sizeof(pRise), "%02d:%02d", (int)mRise/100, mRise%100);
@@ -621,10 +625,10 @@ static void popup_init(void) {
   text_layer_set_text(pAsrLayer, pAsr);
 	layer_add_child(popupLayer, text_layer_get_layer(pAsrLayer));
 
-  pSetLayer = text_layer_create(   GRect(70, 104, 60, 20));
+  pSetLayer = text_layer_create(   GRect(60, 104, 84, 20));
 	text_layer_set_font(pSetLayer, mHighLowFont);
 	text_layer_set_text_alignment(pSetLayer, GTextAlignmentLeft);
-  snprintf(pSet, sizeof(pSet), "%02d:%02d", (int)mSet/100, mSet%100);
+  snprintf(pSet, sizeof(pSet), "%02d:%02d %02d%%", (int)mSet/100, mSet%100, batteryPercent);
   text_layer_set_text(pSetLayer, pSet);
 	layer_add_child(popupLayer, text_layer_get_layer(pSetLayer));
 
@@ -730,7 +734,7 @@ static void handle_tick(struct tm *tick_time, TimeUnits units_changed) {
     static char date_month[8];    
     static char full_date_text[26];
     
-    if(startedSession) mPedometer = TSD;
+    //if(startedSession) mPedometer = TSD;
     
     /*strftime(date_day,
                sizeof(date_day),
@@ -791,12 +795,12 @@ static void handle_tick(struct tm *tick_time, TimeUnits units_changed) {
     
   if (units_changed & HOUR_UNIT) { 
     static char hour_text[] = "00";
-    
+    /*
     if(tick_time->tm_hour==20) { 
       mSleep = 0;
       snprintf(mPedometerText, sizeof(mPedometerText), "%05d  %02d:%02d  %02d:%02d", mPedometer, (int)(mSleep/60), mSleep%60, (int)(mNextPrayer/100), mNextPrayer%100);
       text_layer_set_text(mPedometerLayer, mPedometerText);  
-    }
+    }*/
     
     if(mConfigHourlyVibe) {
       //vibe!
@@ -841,20 +845,25 @@ static void handle_tick(struct tm *tick_time, TimeUnits units_changed) {
       updateNextPrayer();
     }
 
-    if(startedSession) {
+    //if(startedSession) {
       //APP_LOG(APP_LOG_LEVEL_DEBUG, "IDLING.....:%d:%d", mIdle, mActivity);
-      mIdle++;
-      mActivity=mPedometer-mLastPedo;
-      if(mIdle>4) {
-        mSleep += mIdle;
-        snprintf(mPedometerText, sizeof(mPedometerText), "%05d  %02d:%02d  %02d:%02d", mPedometer, (int)(mSleep/60), mSleep%60, (int)(mNextPrayer/100), mNextPrayer%100);
-        text_layer_set_text(mPedometerLayer, mPedometerText);  
-      }
-      if(mActivity>20||mIdle>4) {
+      //mIdle++;
+      //mActivity=mPedometer-mLastPedo;
+      //if(mIdle>4) {
+        //mSleep++; // mIdle;
+        //mIdle=0;
+        //TODO: fix
+        //snprintf(mPedometerText, sizeof(mPedometerText), "%05d  %02d:%02d  %02d:%02d", mPedometer, (int)(mSleep/60), mSleep%60, (int)(mNextPrayer/100), mNextPrayer%100);
+        //snprintf(mPedometerText, sizeof(mPedometerText), "%02d:%02d %d%% %s", (int)(mNextPrayer/100), mNextPrayer%100, batteryPercent, mCity);
+        //text_layer_set_text(mPedometerLayer, mPedometerText);  
+      //}
+      /*
+      if(mActivity>15) {
         mIdle=0;
         mLastPedo=mPedometer;
       }
-    }
+      */
+    //}
     
     if(FREQUENCY_MINUTES == mTimerMinute) {
       fetch_data();
@@ -985,7 +994,7 @@ static void in_received_handler(DictionaryIterator *iter, void *context) {
   Tuple *weather_city = dict_find(iter, WEATHER_CITY_KEY);
   if(weather_city && weather_city->value) {
     memcpy(mCity, weather_city->value->cstring, weather_city->length);
-    text_layer_set_text(mLocationLayer, mCity);
+    //text_layer_set_text(mLocationLayer, mCity);
   }
   
   Tuple *prayer_fajr = dict_find(iter, PRAYER_FAJR_KEY);
@@ -1095,7 +1104,7 @@ static void app_message_init(void) {
   app_message_open(app_message_inbox_size_maximum(), app_message_outbox_size_maximum());
   
   //// pebble_pedometer
-  accel_data_service_subscribe(0, NULL);
+  //accel_data_service_subscribe(0, NULL);
   timer = app_timer_register(ACCEL_STEP_MS, timer_callback, NULL);
 	
   //// On11
@@ -1106,7 +1115,6 @@ static void app_message_init(void) {
 }
 
 static void update_battery(BatteryChargeState charge_state) {
-  uint8_t batteryPercent;
   uint8_t img;
 
   batteryPercent = charge_state.charge_percent;
@@ -1135,7 +1143,7 @@ static void update_battery(BatteryChargeState charge_state) {
 
 void handle_init(void) {
 
-  mPedometer = persist_exists(1) ? persist_read_int(1) : 1;
+  //mPedometer = persist_exists(1) ? persist_read_int(1) : 1;
 
   mTemperatureDegrees = persist_exists(2) ? persist_read_int(2) : 0;
   mTemperatureIcon = persist_exists(3) ? persist_read_int(3) : 0;
@@ -1145,7 +1153,7 @@ void handle_init(void) {
   mRise = persist_exists(7) ? persist_read_int(7) : 0;
   mSet = persist_exists(8) ? persist_read_int(8) : 0;
   if(persist_exists(9)) persist_read_string(9, mCity, sizeof(mCity));
-  mSleep = persist_exists(10) ? persist_read_int(10) : 643;
+  //mSleep = persist_exists(10) ? persist_read_int(10) : 0;
   mFajr = persist_exists(11) ? persist_read_int(11) : 0;
   mDhuhur = persist_exists(12) ? persist_read_int(12) : 0;
   mAsr = persist_exists(13) ? persist_read_int(13) : 0;
@@ -1179,8 +1187,6 @@ void handle_init(void) {
   mBackgroundLayer = layer_create(layer_get_frame(mWindowLayer));
   layer_add_child(mWindowLayer, mBackgroundLayer);
   layer_set_update_proc(mBackgroundLayer, update_background_callback);
-	
-	
 	
   //BATTERY_ICONS
   battery_image = gbitmap_create_with_resource(RESOURCE_ID_BATTERY_100);
@@ -1254,18 +1260,18 @@ void handle_init(void) {
 	layer_add_child(mWindowLayer, text_layer_get_layer(mTemperatureLayer));
 
   // LOCATION //
-  mLocationLayer = text_layer_create(LOCATION_FRAME);  
-	text_layer_set_background_color(mLocationLayer, GColorClear);
-  text_layer_set_text_color(mLocationLayer, GColorBlack);
-	text_layer_set_font(mLocationLayer, fonts_get_system_font(FONT_KEY_GOTHIC_14));
-	text_layer_set_text_alignment(mLocationLayer, GTextAlignmentRight);
-	layer_add_child(mWindowLayer, text_layer_get_layer(mLocationLayer));
+  //mLocationLayer = text_layer_create(LOCATION_FRAME);  
+	//text_layer_set_background_color(mLocationLayer, GColorClear);
+  //text_layer_set_text_color(mLocationLayer, GColorBlack);
+	//text_layer_set_font(mLocationLayer, fonts_get_system_font(FONT_KEY_GOTHIC_14));
+	//text_layer_set_text_alignment(mLocationLayer, GTextAlignmentRight);
+	//layer_add_child(mWindowLayer, text_layer_get_layer(mLocationLayer));
   
   // PEDOMETER //
   mPedometerLayer = text_layer_create(PEDOMETER_FRAME);  
 	text_layer_set_background_color(mPedometerLayer, GColorClear);
   text_layer_set_text_color(mPedometerLayer, GColorBlack);
-	text_layer_set_font(mPedometerLayer, mHighLowFont); //fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD)
+	text_layer_set_font(mPedometerLayer, fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD));
 	text_layer_set_text_alignment(mPedometerLayer, GTextAlignmentLeft);
 	layer_add_child(mWindowLayer, text_layer_get_layer(mPedometerLayer));
 
@@ -1329,7 +1335,7 @@ static int mDhuhur=0;
 static int mAsr=0;
 static int mIsha=0;
 */
-  persist_write_int(1, mPedometer);
+  //persist_write_int(1, mPedometer);
   persist_write_int(2, mTemperatureDegrees);
   persist_write_int(3, mTemperatureIcon);
   persist_write_int(4, mTemperatureHigh);
@@ -1338,7 +1344,7 @@ static int mIsha=0;
   persist_write_int(7, mRise);
   persist_write_int(8, mSet);
   persist_write_string(9, mCity);
-  persist_write_int(10, mSleep);
+  //persist_write_int(10, mSleep);
   persist_write_int(11, mFajr);
   persist_write_int(12, mDhuhur);
   persist_write_int(13, mAsr);
@@ -1357,7 +1363,7 @@ static int mIsha=0;
   persist_write_string(52, fc3d);
   persist_write_int(53, fc3c);
 
-	accel_data_service_unsubscribe();
+	//accel_data_service_unsubscribe();
   
   fonts_unload_custom_font(mTimeFont);
   fonts_unload_custom_font(mDateFont);

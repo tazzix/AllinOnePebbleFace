@@ -37,7 +37,7 @@
         "configurable"
     ],
     "companyName": "Tazzix",
-    "longName": "All in One Pebble v1.0",
+    "longName": "All in One Pebble v1.1",
     "projectType": "native",
     "resources": {
         "media": [
@@ -294,12 +294,14 @@
             },
             {
                 "characterRegex": "[:0-9? \u00b0-]",
+                "compatibility": "2.7",
                 "file": "fonts/MuroRegular.ttf",
                 "name": "MEDIUM_34",
                 "type": "font"
             },
             {
                 "characterRegex": "[:0-9?]",
+                "compatibility": "2.7",
                 "file": "fonts/MuroRegular.ttf",
                 "name": "BIG_52",
                 "type": "font"
@@ -336,22 +338,25 @@
             },
             {
                 "characterRegex": "[:0-9A-Za-z. - \u00b0?\u041a\u0418]",
+                "compatibility": "2.7",
                 "file": "fonts/AA-BebasNeue.ttf",
                 "name": "SMALL_22",
                 "type": "font"
             },
             {
                 "characterRegex": "[:0-9A-Za-z. - \u00b0?\u0418\u0411\u041f\u0427\u0414\u041a\u042f\u0413\u042e\u041b\u0419\u0424\u00c9\u00c4\u00db\u00c1]",
+                "compatibility": "2.7",
                 "file": "fonts/AA-BebasNeue.ttf",
                 "name": "SMALL_26",
                 "type": "font"
             }
         ]
     },
-    "shortName": "All in One v1.0",
+    "sdkVersion": "2",
+    "shortName": "All in One v1.1",
     "uuid": "4D6D8FFE-ABA3-40C7-AE37-F83A1FAEE39C",
     "versionCode": 10,
-    "versionLabel": "1.0",
+    "versionLabel": "1.1",
     "watchapp": {
         "watchface": true
     }

@@ -29,10 +29,12 @@ function fetchWeather(latitude, longitude) {
   //console.log("Fetch Weather");
   var response, tzone;
   tzone = 0-((new Date().getTimezoneOffset())/60);
-  console.log("Tzone:"+tzone);
+  //console.log("Tzone:"+tzone);
   var req = new XMLHttpRequest();
-  req.open('GET', /*"http://www.mirz.com/Chunk2/Yahoo.php?"*/ "http://linuxvps.tazzix.com/pebapp01.php?" +
-    "lat=" + latitude + "&long=" + longitude + "&units=" + UnitsToString(mConfig.units) + "&tzone=" + tzone, true);
+  var url = /*"http://www.mirz.com/Chunk2/Yahoo.php?"*/ "http://linuxvps.tazzix.com/pebapp01.php?" +
+    "lat=" + latitude + "&long=" + longitude + "&units=" + UnitsToString(mConfig.units) + "&tzone=" + tzone;
+  //console.log(url);
+  req.open('GET', url, true);
   req.onload = function(e) {
     if (req.readyState == 4) {
       if(req.status == 200) {
