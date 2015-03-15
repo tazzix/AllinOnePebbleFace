@@ -37,7 +37,7 @@
         "configurable"
     ],
     "companyName": "Tazzix",
-    "longName": "All in One Pebble v1.1",
+    "longName": "All in One Pebble v1.3",
     "projectType": "native",
     "resources": {
         "media": [
@@ -353,10 +353,10 @@
         ]
     },
     "sdkVersion": "2",
-    "shortName": "All in One v1.1",
+    "shortName": "All in One v1.3",
     "uuid": "4D6D8FFE-ABA3-40C7-AE37-F83A1FAEE39C",
     "versionCode": 10,
-    "versionLabel": "1.1",
+    "versionLabel": "1.3",
     "watchapp": {
         "watchface": true
     }

@@ -47,7 +47,7 @@ static GFont *mTimeFont;
 static GFont *mTemperatureFont;   
 static GFont *mHighLowFont;
 
-static int mTimerMinute = 0;
+static int mTimerMinute = FREQUENCY_MINUTES;
 static int mInitialMinute;
 
 static int mConfigStyle;               //1=BlackOnWhite, 2=Split1(WhiteTop), 3=WhiteOnBlack, 4=Split2(BlackTop)
@@ -865,7 +865,7 @@ static void handle_tick(struct tm *tick_time, TimeUnits units_changed) {
       */
     //}
     
-    if(FREQUENCY_MINUTES == mTimerMinute) {
+    if(FREQUENCY_MINUTES >= mTimerMinute) {
       fetch_data();
       mTimerMinute = 0;
     }

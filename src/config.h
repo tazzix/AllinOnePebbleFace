@@ -2,7 +2,7 @@
 #define CONFIG_H
 
 //Check for new weather every X minutes
-#define FREQUENCY_MINUTES 5
+#define FREQUENCY_MINUTES 15
 
 //frames
 #define TIME_FRAME          (GRect(0, 78, 144, 54))
