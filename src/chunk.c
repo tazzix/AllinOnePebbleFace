@@ -489,7 +489,7 @@ void weather_set_icon(WeatherIcon icon) {
 
 void weather_set_temperature(int16_t t) {
 	if(t==999) {
-		snprintf(mTemperatureText, sizeof(mTemperatureText), "%s\u00B0", "???");
+		//snprintf(mTemperatureText, sizeof(mTemperatureText), "%s\u00B0", "???");
 	} else {
 		snprintf(mTemperatureText, sizeof(mTemperatureText), "%d\u00B0", t);
 	}
@@ -502,9 +502,9 @@ void weather_set_highlow(int16_t high, int16_t low, int16_t humidity, int16_t ri
   snprintf(mHighLowText, sizeof(mHighLowText), "%02d:%02d/%02d:%02d   P:%d%%", (int)(rise/100), rise-(((int)(rise/100))*100), (int)(set/100), set-(((int)(set/100))*100), humidity);
 	text_layer_set_text(mHighLowLayer, mHighLowText);
 
-  if(high==99 && low==0) {
-    snprintf(mHiText, sizeof(mHiText), "%s\u00B0", "?");
-    snprintf(mLoText, sizeof(mLoText), "%s\u00B0", "?");
+  if((high==99 && low==0)||(high==0 && low==0)) {
+    //snprintf(mHiText, sizeof(mHiText), "%s\u00B0", "?");
+    //snprintf(mLoText, sizeof(mLoText), "%s\u00B0", "?");
 	}
 	else {
     snprintf(mHiText, sizeof(mHiText), "%d\u00B0", high);
@@ -727,6 +727,8 @@ static void handle_shake(AccelAxisType axis, int32_t direction) {
 
 static void handle_tick(struct tm *tick_time, TimeUnits units_changed) {
 
+  if(mTemperatureDegrees == 999) fetch_data();
+
   if (units_changed & DAY_UNIT) {
   
     static char date_day[6];
@@ -810,7 +812,8 @@ static void handle_tick(struct tm *tick_time, TimeUnits units_changed) {
       if(tick_time->tm_hour<6 || tick_time->tm_hour>17) {
         //nightMode();
       }
-    }    
+    }
+    if (tick_time->tm_hour%2==0) fetch_data();
     if(clock_is_24h_style()) {
       strftime(hour_text, sizeof(hour_text), "%H", tick_time);
     }
@@ -840,8 +843,9 @@ static void handle_tick(struct tm *tick_time, TimeUnits units_changed) {
       vibes_double_pulse();
       vibes_double_pulse();
     }
-    if(currTime>(mNextPrayer+5)) {
+    if(currTime>(mNextPrayer+15)) {
       // update for next prayer
+      fetch_data();
       updateNextPrayer();
     }
 
@@ -864,15 +868,15 @@ static void handle_tick(struct tm *tick_time, TimeUnits units_changed) {
       }
       */
     //}
-    
-    if(FREQUENCY_MINUTES >= mTimerMinute) {
+    /*
+    if(FREQUENCY_MINUTES >= mTimerMinute || mTemperatureDegrees == 999) {
       fetch_data();
       mTimerMinute = 0;
     }
     else {
       mTimerMinute++;
     } 
-
+    */
   }
   if (mConfigBlink && (units_changed & SECOND_UNIT)) {
     layer_set_hidden(text_layer_get_layer(mTimeSeparatorLayer), tick_time->tm_sec%2);
