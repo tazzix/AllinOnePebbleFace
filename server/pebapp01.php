@@ -1,5 +1,7 @@
 <?php
 
+// http://linvps.tazz.net/pebapp01.php?lat=33.68&long=73.04&units=c&tzone=5
+
 define("FLICKR_KEY", "GETYOUROWNKEY"); // GET YOUR OWN KEY
 
 include('PrayTime.php');
